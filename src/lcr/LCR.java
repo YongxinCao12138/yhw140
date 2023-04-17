@@ -1,4 +1,5 @@
-import java.io.*;
+package lcr;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -29,7 +30,7 @@ public class LCR {
          * 初始化进程，uid随机生成
          */
         List<Process> processes = new LinkedList<>();
-        for (int i = 0; i < num_processor; i++) {
+        for (int i = 1; i <= num_processor; i++) {
             processes.add(new Process(i));
         }
 
@@ -51,7 +52,7 @@ public class LCR {
          * 打印环状结构
          */
         System.out.print("struct: ");
-        for (int i=0;i<num_processor;i++){
+        for (int i=1; i<=num_processor; i++){
             System.out.print(p.getMyId()+" -> ");
             p=p.getNextProcess();
         }

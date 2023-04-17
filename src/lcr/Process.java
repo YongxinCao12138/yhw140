@@ -1,3 +1,5 @@
+package lcr;
+
 /**
  * 进程类
  *
@@ -35,6 +37,21 @@ public class Process extends Thread {
         nextProcess = process;
     }
 
+    public synchronized int getLeaderId() {
+        while (leaderId == 0) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                System.out.println("server simulation failed");
+            }
+        }
+        return leaderId;
+    }
+
+    public synchronized void setLeaderId(int leaderId) {
+        this.leaderId = leaderId;
+        notify();
+    }
 
     public Process(int uid) {
         this.myId = uid;
@@ -73,7 +90,7 @@ public class Process extends Thread {
                 return;
             }
             status=true;
-            leaderId=myId;
+            setLeaderId(myId);
             //nextProcess.updateLeader(leaderId);
             new Thread(() -> nextProcess.updateLeader(leaderId)).start();
             System.out.println(myId+": success ! I am th leader .");
@@ -90,7 +107,7 @@ public class Process extends Thread {
     synchronized public void updateLeader(int leaderId){
         if (leaderId != myId ){
             status = true;
-            this.leaderId=leaderId;
+            setLeaderId(leaderId);
             //nextProcess.updateLeader(leaderId);
             new Thread(() -> nextProcess.updateLeader(leaderId)).start();
             System.out.println(myId+": success ! leader is the : "+ leaderId);
