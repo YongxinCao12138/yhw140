@@ -31,10 +31,10 @@ public class Server {
 				BufferedReader input = new BufferedReader(new InputStreamReader(aClientSocket.getInputStream()));
 
 				System.out.println("Connection established with a new client with IP address: " + aClientSocket.getInetAddress());
-				output.println("Server says: Hello Client. This is server " + myServerSocket.getInetAddress() + " speaking. please input a number for simulation process number");
 
 				while (true) {
 					if (isServerClose(aClientSocket)) {
+						System.out.println("Connection with client " + aClientSocket.getInetAddress() + " is now closing...");
 						break;
 					}
 
@@ -51,6 +51,7 @@ public class Server {
 					if (!StringUtil.isEmpty(message)) {
 						System.out.println("Client says: " + message);
 						if (message.equals("quit") || message.equals("q")) {
+							System.out.println("Connection with client " + aClientSocket.getInetAddress() + " is now closing...");
 							break;
 						}
 
@@ -59,7 +60,7 @@ public class Server {
 						try {
 							defaultNumProcessor = Integer.parseInt(message);
 						} catch (NumberFormatException e) {
-							output.println("the processor number is illegal. Use the default number 10");
+							System.out.println("the processor number is illegal. Use the default number 10");
 						} finally {
 							Process process = LCR.startRandom(defaultNumProcessor);
 							output.println("lcr result!" + process.getLeaderId());

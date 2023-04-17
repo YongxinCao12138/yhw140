@@ -26,6 +26,7 @@ public class Client {
 				System.out.println(input.readLine()); // reads the first message from the server and prints it
 				String userInput = stdIn.readLine(); // reads user's input
 				if (userInput.equals("quit") || userInput.equals("q")) {
+					output.println(userInput);
 					break;
 				}
 				output.println(userInput); // user's input transmitted to server
