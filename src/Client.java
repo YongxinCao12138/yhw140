@@ -30,7 +30,7 @@ public class Client {
 				}
 				output.println(userInput); // user's input transmitted to server
 				// read simulation result
-				System.out.println("simulation result: " + input.readLine()); // reads server's ack and prints it
+				System.out.println(input.readLine());
 			}
 		} catch (UnknownHostException e) {
 			System.err.println("Don't know about host " + hostName);

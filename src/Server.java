@@ -38,12 +38,13 @@ public class Server {
 						break;
 					}
 
+					output.println("please input a number for simulation process number");
 					String message = null;
 					try {
 						message = input.readLine();
 					} catch (IOException e) {
 						// 防止客户端异常退出，服务器端无法处理也异常退出
-						System.out.println("Connection with client " + aClientSocket.getInetAddress() + " is now closing...\n");
+						System.out.println("Connection with client " + aClientSocket.getInetAddress() + " is now closing...");
 					}
 
 					// check client message
@@ -62,7 +63,6 @@ public class Server {
 						} finally {
 							Process process = LCR.startRandom(defaultNumProcessor);
 							output.println("lcr result!" + process.getLeaderId());
-//							output.println("result");
 						}
 					}
 				}
