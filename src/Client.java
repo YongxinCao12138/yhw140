@@ -1,3 +1,5 @@
+import util.SocketUtil;
+
 import java.net.*;
 import java.io.*;
 
@@ -18,18 +20,22 @@ public class Client {
 			BufferedReader input = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
+			// multiple input message
 			while (true) {
-				if (isServerClose(myClientSocket)) {
+				if (SocketUtil.isConnectClose(myClientSocket)) {
 					System.out.println("server is close!");
 					break;
 				}
-				System.out.println(input.readLine()); // reads the first message from the server and prints it
-				String userInput = stdIn.readLine(); // reads user's input
+				// read server message
+				System.out.println(input.readLine());
+				// reads user's input
+				String userInput = stdIn.readLine();
 				if (userInput.equals("quit") || userInput.equals("q")) {
 					output.println(userInput);
 					break;
 				}
-				output.println(userInput); // user's input transmitted to server
+				// user's input processor number to server
+				output.println(userInput);
 				// read simulation result
 				System.out.println(input.readLine());
 			}
@@ -41,20 +47,6 @@ public class Client {
 					hostName);
 			e.printStackTrace();
 			System.exit(1);
-		}
-	}
-
-	/**
-	 * 判断是否断开连接，断开返回true,没有返回false
-	 * @param socket
-	 * @return
-	 */
-	public static Boolean isServerClose(Socket socket){
-		try{
-			socket.sendUrgentData(0xFF);//发送1个字节的紧急数据，默认情况下，服务器端没有开启紧急数据处理，不影响正常通信
-			return false;
-		}catch(Exception se){
-			return true;
 		}
 	}
 }

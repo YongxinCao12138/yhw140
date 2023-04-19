@@ -1,5 +1,6 @@
 import lcr.LCR;
 import lcr.Process;
+import util.SocketUtil;
 import util.StringUtil;
 
 import java.net.*;
@@ -24,7 +25,8 @@ public class Server {
 		try {
 			myServerSocket = new ServerSocket(portNumber);
 
-			while (true) { //in order to serve multiple clients but sequentially, one after the other
+			//in order to serve multiple clients but sequentially, one after the other
+			while (true) {
 				// get client
 				Socket aClientSocket = myServerSocket.accept();
 				PrintWriter output = new PrintWriter(aClientSocket.getOutputStream(), true);
@@ -33,7 +35,7 @@ public class Server {
 				System.out.println("Connection established with a new client with IP address: " + aClientSocket.getInetAddress());
 
 				while (true) {
-					if (isServerClose(aClientSocket)) {
+					if (SocketUtil.isConnectClose(aClientSocket)) {
 						System.out.println("Connection with client " + aClientSocket.getInetAddress() + " is now closing...");
 						break;
 					}
@@ -43,7 +45,7 @@ public class Server {
 					try {
 						message = input.readLine();
 					} catch (IOException e) {
-						// 防止客户端异常退出，服务器端无法处理也异常退出
+						// Prevent abnormal exit of the client, even if the server cannot handle it
 						System.out.println("Connection with client " + aClientSocket.getInetAddress() + " is now closing...");
 					}
 
@@ -55,7 +57,7 @@ public class Server {
 							break;
 						}
 
-						// 默认集群数量
+						// default processor number
 						int defaultNumProcessor = 10;
 						try {
 							defaultNumProcessor = Integer.parseInt(message);
@@ -63,7 +65,7 @@ public class Server {
 							System.out.println("the processor number is illegal. Use the default number 10");
 						} finally {
 							Process process = LCR.startRandom(defaultNumProcessor);
-							output.println("lcr result!" + process.getLeaderId());
+							output.println("lcr result: " + process.getLeaderId() + " is the leader!");
 						}
 					}
 				}
@@ -75,20 +77,6 @@ public class Server {
 			if (myServerSocket != null) {
 				myServerSocket.close();
 			}
-		}
-	}
-
-	/**
-	 * 判断是否断开连接，断开返回true,没有返回false
-	 * @param socket
-	 * @return
-	 */
-	public static Boolean isServerClose(Socket socket){
-		try{
-			socket.sendUrgentData(0xFF);//发送1个字节的紧急数据，默认情况下，服务器端没有开启紧急数据处理，不影响正常通信
-			return false;
-		}catch(Exception se){
-			return true;
 		}
 	}
 }

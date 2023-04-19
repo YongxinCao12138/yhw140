@@ -1,27 +1,16 @@
 package lcr;
 
-/**
- * 进程类
- *
- *
- */
 public class Process extends Thread {
-    /**
-     *  myid = uid
-     */
+    // myid = uid
     private int myId;
-    /**
-     *
-     */
+
     private volatile int sendId;
-    /**
-     * leaderId
-     */
+
     private int leaderId;
-    /**
-     * true = leader
-     * false = unknown
-     */
+
+     //true = leader
+     //false = unknown
+
     private volatile boolean status;
 
 
@@ -37,6 +26,7 @@ public class Process extends Thread {
         nextProcess = process;
     }
 
+    // get leaderId util lead is found
     public synchronized int getLeaderId() {
         while (leaderId == 0) {
             try {
@@ -60,7 +50,7 @@ public class Process extends Thread {
     }
 
     /**
-     * 邻居进程
+     * linked thread
      */
     private Process nextProcess;
 
@@ -72,19 +62,22 @@ public class Process extends Thread {
      * @param inId
      */
      synchronized public void receive(int inId){
-        if (inId > myId){   //向下传递
+        // pass down
+         if (inId > myId){
             sendId = inId;
             //nextProcess.receive(sendId);
            new Thread(() -> nextProcess.receive(sendId)).start();
             show(inId,"continue");
-        }else if (inId == myId ){    //找到leader
+        }else if (inId == myId ){
+            //找到leader
             /**
-             *      * 注意:这里有个多线程问题，也可以时模拟了网络通信会出现的问题（大sendID覆盖小的sendID最终有多个findLeader信息在集群传播）
-             *      * 假设有6个线程，其中成功传递的有两个uid（成功传递代表，不被done掉！）
-             *      * 线程A的uid大于线程B的uid，这时候若线程A的传递速度较快（CPU时间片执行时间内，传递到了线程B的数据栈上）
-             *      * A线程经过B线程时，修改了B线程的sendID，这时候，就会有两个相同的sendID在环上，进而就会有双倍的success信号
-             *      * 所以通过以下代码来阻断重复接收到的包
-             */
+            *  Note: There is a multithreading issue here, which can also simulate network communication issues
+            *  (large sendIDs covering small sendIDs ultimately have multiple findLeader information propagating in the cluster)
+            *   Assuming there are 6 threads, of which two uids are successfully passed (successful passing represents not being dropped by done!)
+            *   If the uid of thread A is greater than that of thread B, the delivery speed of thread A is faster (within the CPU time slice execution time, it is delivered to the data stack of thread B)
+            *   When thread A passes through thread B and modifies its sendID, there will be two identical sendIDs on the ring, resulting in a double success signal
+            *   So use the following code to block duplicate received packets
+            */
             if (status){
                 show(inId,"repeated packet");
                 return;
@@ -101,8 +94,7 @@ public class Process extends Thread {
     }
 
     /**
-     * 传递leader（更新leader进程的uid）
-     * @param leaderId
+     * update leaderId
      */
     synchronized public void updateLeader(int leaderId){
         if (leaderId != myId ){
