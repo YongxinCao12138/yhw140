@@ -13,7 +13,7 @@ public class Server {
 
 		if (args.length < 1) {
 			System.out.println("Warning: You have provided no arguments\nTrying to connect to the default port 8000...");
-			portNumber = 8001;
+			portNumber = 8000;
 		} else if (args.length == 1) {
 			portNumber = Integer.parseInt(args[0]);
 		} else {
